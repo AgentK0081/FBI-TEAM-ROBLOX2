@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Police Database</title>
+    <style>
+        body {
+            background-color: #0b0f19;
+            color: white;
+            font-family: "Arial", sans-serif;
+            text-align: center;
+            padding-top: 30px;
+        }
+
+        #header {
+            font-size: 24px;
+            font-weight: bold;
+            background-color: #141922;
+            padding: 15px;
+            border-bottom: 3px solid #7289da;
+        }
+
+        #search-container {
+            margin: 20px auto;
+            width: 60%;
+            background-color: #141922;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+        }
+
+        input {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid white;
+            background-color: #1e232a;
+            color: white;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 5px;
+        }
+
+        #results {
+            margin-top: 20px;
+        }
+
+        .embed-box {
+            background-color: #141922;
+            border-left: 6px solid #7289da;
+            border-radius: 8px;
+            padding: 15px;
+            width: 60%;
+            text-align: left;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+            margin: 10px auto;
+        }
+
+        .embed-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .embed-description {
+            font-size: 16px;
+            color: #b9bbbe;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .threat-level {
+            font-weight: bold;
+            padding: 5px;
+            border-radius: 5px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        .low { background-color: green; color: white; }
+        .medium { background-color: orange; color: black; }
+        .high { background-color: red; color: white; }
+        .critical { background-color: darkred; color: white; }
+    </style>
+</head>
+<body>
+
+    <div id="header">🚔 Police Criminal Database System 🚔</div>
+
+    <div id="search-container">
+        <input type="text" id="search-bar" placeholder="Search for a suspect...">
+        <button onclick="search()">🔍 Search</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        // Database of suspects
+        const users = [
+            { username: "ItsWillian", reason: "2x Firing on Officer, 1x Bank Robbery, 1x Robbery", details: "N/A", threat: "High" },
+            { username: "ExploitBan", reason: "Officer murderer", details: "N/A", threat: "Critical" },
+            { username: "Akori4e", reason: "Shooting multiple officers and FBI members", details: "The girl doesn't stop shooting, very dangerous.", threat: "Critical" },
+            { username: "LUKE_R2D2", reason: "Murdering an Agent", details: "Suspect said it's from TPC.", threat: "High" },
+            { username: "UhOkayz", reason: "Officer murder after investigation", details: "N/A", threat: "High" },
+            { username: "001vvs", reason: "Shooting FBI Agent and Damaging FBI Vehicle", details: "N/A", threat: "Medium" },
+            { username: "Ikhebeenhond10", reason: "Started firing on officer and killed me", details: "N/A", threat: "High" },
+            { username: "darkvader_47", reason: "Murder on federal agent, x3 Evasion, x1 ATM Robbery", details: "Drives a black Bullhorn Determinator SFP, black jack Widebody 2022 with white rims, plate: DEMON.", threat: "Critical" },
+            { username: "Flo010709", reason: "x10 officer murder and teaming", details: "N/A", threat: "Critical" },
+            { username: "Hamim234", reason: "x5 officer murder and teaming", details: "N/A", threat: "High" },
+            { username: "Oaudyi", reason: "Possible contract killer", details: "Ordered to kill us by 2 masked people.", threat: "Critical" },
+            { username: "Visttula", reason: "Firing on agent x1", details: "Possible another contract killer.", threat: "Medium" },
+            { username: "ShaneBarf", reason: "Stalking and threats", details: "Looks like he is targeting me.", threat: "Low" }
+        ];
+
+        function search() {
+            let query = document.getElementById("search-bar").value.toLowerCase();
+            let resultsDiv = document.getElementById("results");
+
+            resultsDiv.innerHTML = ""; // Clear previous results
+            let matchedUsers = users.filter(user => user.username.toLowerCase().includes(query));
+
+            if (matchedUsers.length > 0) {
+                matchedUsers.forEach(user => {
+                    let threatClass = getThreatClass(user.threat);
+                    resultsDiv.innerHTML += `
+                        <div class="embed-box">
+                            <div class="embed-title">🔍 Search Result: ${user.username}</div>
+                            <div class="embed-description">
+                                <span class="highlight">Username:</span> ${user.username}<br>
+                                <span class="highlight">Reason:</span> ${user.reason}<br>
+                                <span class="highlight">Details:</span> ${user.details}<br>
+                                <span class="highlight">Threat Level:</span> <span class="threat-level ${threatClass}">${user.threat}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                resultsDiv.innerHTML = `
+                    <div class="embed-box">
+                        <div class="embed-title">❌ No Results Found</div>
+                        <div class="embed-description">No results found for "<b>${query}</b>". Try another search.</div>
+                    </div>
+                `;
+            }
+        }
+
+        function getThreatClass(level) {
+            switch (level) {
+                case "Low": return "low";
+                case "Medium": return "medium";
+                case "High": return "high";
+                case "Critical": return "critical";
+                default: return "";
+            }
+        }
+    </script>
+
+</body>
+</html>
+
