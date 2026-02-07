@@ -171,52 +171,37 @@
         ];
 
 
-    // 🔴 REPLACE your old search() with THIS
-    async function search() {
-        const query = document.getElementById("search-bar").value.toLowerCase();
-        const resultsDiv = document.getElementById("results");
-        resultsDiv.innerHTML = "⏳ Checking live status...";
+        function search() {
+            let query = document.getElementById("search-bar").value.toLowerCase();
+            let resultsDiv = document.getElementById("results");
 
-        const res = await fetch("https://fbi-team-roblox.onrender.com/live-users");
-        const liveUsers = await res.json();
+            resultsDiv.innerHTML = ""; // Clear previous results
+            let matchedUsers = users.filter(user => user.username.toLowerCase().includes(query));
 
-        const matchedUsers = users.filter(user =>
-            user.username.toLowerCase().includes(query) &&
-            liveUsers.some(lu => lu.userId)
-        );
-
-        resultsDiv.innerHTML = "";
-
-        if (matchedUsers.length === 0) {
-            resultsDiv.innerHTML = `
-                <div class="embed-box">
-                    <div class="embed-title">❌ No Live Results</div>
-                    <div class="embed-description">
-                        No matching users currently in-game.
+            if (matchedUsers.length > 0) {
+                matchedUsers.forEach(user => {
+                    let threatClass = getThreatClass(user.threat);
+                    resultsDiv.innerHTML += `
+                        <div class="embed-box">
+                            <div class="embed-title">🔍 Search Result: ${user.username}</div>
+                            <div class="embed-description">
+                                <span class="highlight">Username:</span> ${user.username}<br>
+                                <span class="highlight">Reason:</span> ${user.reason}<br>
+                                <span class="highlight">Details:</span> ${user.details}<br>
+                                <span class="highlight">Threat Level:</span> <span class="threat-level ${threatClass}">${user.threat}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                resultsDiv.innerHTML = `
+                    <div class="embed-box">
+                        <div class="embed-title">❌ No Results Found</div>
+                        <div class="embed-description">No results found for "<b>${query}</b>". Try another search.</div>
                     </div>
-                </div>
-            `;
-            return;
+                `;
+            }
         }
-
-        matchedUsers.forEach(user => {
-            const threatClass = getThreatClass(user.threat);
-            resultsDiv.innerHTML += `
-                <div class="embed-box">
-                    <div class="embed-title">🟢 LIVE: ${user.username}</div>
-                    <div class="embed-description">
-                        <b>Reason:</b> ${user.reason}<br>
-                        <b>Details:</b> ${user.details}<br>
-                        <b>Threat:</b>
-                        <span class="threat-level ${threatClass}">
-                            ${user.threat}
-                        </span>
-                    </div>
-                </div>
-            `;
-        });
-    }
-
 
         function getThreatClass(level) {
             switch (level) {
